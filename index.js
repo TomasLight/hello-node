@@ -4,7 +4,7 @@ const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const { IoC } = require('./utils/ioc');
+const { DependencyInjection } = require('./utils/dependency-injection');
 const { setupEnv, registerDependencies } = require('./config');
 const { SiteController, UsersController } = require('./controllers');
 
@@ -22,8 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(publicPath));
 
-IoC.resolve(SiteController);
-IoC.resolve(UsersController);
+DependencyInjection.resolve(SiteController);
+DependencyInjection.resolve(UsersController);
 
 app.use((request, response, next) => {
     const filePath = __dirname + '/public/not-found.html';

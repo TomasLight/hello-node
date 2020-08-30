@@ -1,6 +1,6 @@
 const dependencies = new Map();
 
-const IoC = {
+const DependencyInjection = {
     /**
      * @param {InstanceType} instanceType
      * @param {InstanceType} implementation
@@ -37,4 +37,4 @@ const IoC = {
     },
 }
 
-export { IoC };
+export { DependencyInjection };

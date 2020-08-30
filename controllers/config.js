@@ -1,4 +1,4 @@
-import { IoC } from '../utils/ioc';
+import { DependencyInjection } from '../utils/dependency-injection';
 import { Logger } from '../utils/loggers';
 import { Application } from '../application';
 import { UserRepository } from '../data/user-repository';
@@ -7,19 +7,19 @@ import { SiteController } from './site-controller';
 import { UsersController } from './users-controller';
 
 function register() {
-    IoC.register(
+    DependencyInjection.register(
         SiteController,
         SiteController,
-        IoC.resolve(Logger),
-        IoC.resolve(Application)
+        DependencyInjection.resolve(Logger),
+        DependencyInjection.resolve(Application)
     );
 
-    IoC.register(
+    DependencyInjection.register(
         UsersController,
         UsersController,
-        IoC.resolve(Logger),
-        IoC.resolve(Application),
-        IoC.resolve(UserRepository)
+        DependencyInjection.resolve(Logger),
+        DependencyInjection.resolve(Application),
+        DependencyInjection.resolve(UserRepository)
     );
 }
 

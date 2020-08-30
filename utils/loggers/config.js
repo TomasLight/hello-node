@@ -1,9 +1,9 @@
-import { IoC } from '../ioc';
+import { DependencyInjection } from '../dependency-injection';
 import { Logger } from './logger';
 import { FileLogger } from './file';
 
 function register() {
-    IoC.register(Logger, FileLogger);
+    DependencyInjection.register(Logger, FileLogger);
 }
 
 export { register };
