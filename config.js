@@ -1,7 +1,8 @@
-const { extractEnvironmentVariables } = require('./utils/extract-environment-variables');
-const application = require('./application/config');
-const controllers = require('./controllers/config');
-const logger = require('./utils/loggers/config');
+import { extractEnvironmentVariables } from './utils/variables';
+import { register as applicationRegister } from './application/config';
+import { register as controllersRegister } from './controllers/config';
+import { register as repositoriesRegister } from './data.fake/config';
+import { register as loggerRegister } from './utils/loggers/config';
 
 function setupEnv() {
     const envVariables = extractEnvironmentVariables();
@@ -10,9 +11,10 @@ function setupEnv() {
 
 /** @param {Application} expressApp */
 function registerDependencies(expressApp) {
-    logger.register();
-    application.register(expressApp);
-    controllers.register();
+    loggerRegister();
+    applicationRegister(expressApp);
+    repositoriesRegister();
+    controllersRegister();
 }
 
 module.exports = {

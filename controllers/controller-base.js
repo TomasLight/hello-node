@@ -8,7 +8,7 @@ import { Application } from '../application';
  * @property {boolean} [body]
  * */
 
-class ControllerBase {
+export class ControllerBase {
     /**
      * @param {Logger} logger
      * @param {Application} application
@@ -130,5 +130,3 @@ class ControllerBase {
         this.response.send(json);
     }
 }
-
-export { ControllerBase };

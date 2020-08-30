@@ -1,11 +1,4 @@
-import fs from 'fs';
-
-/** @param {string} file */
-function getFileLines(file) {
-    return file.split(/\r?\n/);
-}
-
-class Variables {
+export class Variables {
     constructor() {
         this.result = {};
         this.addVariableFromString = this.addVariableFromString.bind(this);
@@ -26,15 +19,3 @@ class Variables {
         this.result[name] = value;
     }
 }
-
-function extractEnvironmentVariables() {
-    const file = fs.readFileSync('./.env', 'utf-8');
-    const lines = getFileLines(file);
-
-    const variables = new Variables();
-    lines.forEach(variables.addVariableFromString);
-
-    return variables.result;
-}
-
-export { extractEnvironmentVariables };

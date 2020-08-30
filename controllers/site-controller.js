@@ -1,6 +1,6 @@
 import { ControllerBase } from './controller-base';
 
-class SiteController extends ControllerBase {
+export class SiteController extends ControllerBase {
     constructor(logger, app) {
         super(logger, app);
 
@@ -61,5 +61,3 @@ class SiteController extends ControllerBase {
         return this.ok(result);
     }
 }
-
-export { SiteController };

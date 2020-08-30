@@ -2,7 +2,7 @@ import { Application, Router } from 'express';
 
 import { Application as ApplicationBase} from './application';
 
-class ExpressApplication extends ApplicationBase {
+export class ExpressApplication extends ApplicationBase {
     constructor(express) {
         super();
 
@@ -72,5 +72,3 @@ class ExpressApplication extends ApplicationBase {
         return this.express.delete(url, action);
     }
 }
-
-export { ExpressApplication };

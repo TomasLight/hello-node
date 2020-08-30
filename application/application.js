@@ -1,4 +1,4 @@
-class Application {
+export class Application {
     constructor() {
         if (new.target === Application) {
             throw new TypeError(`Cannot construct Application instance directly`);
@@ -44,5 +44,3 @@ class Application {
     delete(url, action) {
     }
 }
-
-export { Application };
