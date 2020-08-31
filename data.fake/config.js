@@ -1,5 +1,5 @@
 import { DependencyInjection } from '../utils/dependency-injection';
-import { UserRepository } from '../data/user-repository';
+import { UserRepository } from '../data/users';
 import { FakeUserRepository } from './fake-user-repository';
 
 function register() {

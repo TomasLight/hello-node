@@ -5,22 +5,22 @@ export class UserRepository {
         }
     }
 
-    /** @returns {User[]} */
+    /** @returns {UserEntity[]} */
     list() {
         throw new Error("Not implemented");
     }
 
     /**
      * @param {number} userId
-     * @returns {User}
+     * @returns {UserEntity}
      */
     get(userId) {
         throw new Error("Not implemented");
     }
 
     /**
-     * @param {User} user
-     * @returns {User}
+     * @param {UserEntity} user
+     * @returns {UserEntity}
      */
     add(user) {
         throw new Error("Not implemented");

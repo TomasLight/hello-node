@@ -1,7 +1,8 @@
 import { extractEnvironmentVariables } from './utils/variables';
-import { register as applicationRegister } from './application/config';
-import { register as repositoriesRegister } from './data.fake/config';
-import { register as loggerRegister } from './utils/loggers/config';
+import { register as registerApplication } from './application/config';
+import { register as registerRepositories } from './data.fake/config';
+import { register as registerServices } from './domain.services/config';
+import { register as registerLogger } from './utils/loggers/config';
 
 function setupEnv() {
     const envVariables = extractEnvironmentVariables();
@@ -10,9 +11,10 @@ function setupEnv() {
 
 /** @param {Application} expressApp */
 function registerDependencies(expressApp) {
-    loggerRegister();
-    applicationRegister(expressApp);
-    repositoriesRegister();
+    registerLogger();
+    registerApplication(expressApp);
+    registerRepositories();
+    registerServices();
 }
 
 export {

@@ -1,17 +1,16 @@
-import { User } from '../data/user';
-import { UserRepository } from '../data/user-repository';
+import { UserEntity, UserRepository } from '../data/users';
 
 export class FakeUserRepository extends UserRepository {
     constructor() {
         super();
 
-        /** @type {User[]} */
+        /** @type {UserEntity[]} */
         this.users = [
-            new User({
+            new UserEntity({
                 id: 1,
                 name: 'user-1'
             }),
-            new User({
+            new UserEntity({
                 id: 2,
                 name: 'user-2'
             }),

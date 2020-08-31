@@ -1,15 +1,14 @@
 import { ControllerBase } from './controller-base';
-import { User } from '../data/user';
-import { UserRepository } from '../data/user-repository';
+import { UserService } from '../domain/users';
 
 export class UsersController extends ControllerBase {
-    static __constructorParams = ControllerBase.__constructorParams.concat([ UserRepository ]);
+    static __constructorParams = ControllerBase.__constructorParams.concat([ UserService ]);
 
-    constructor(logger, app, userRepository) {
+    constructor(logger, app, userService) {
         super(logger, app);
 
-        /** @type {UserRepository} */
-        this.userRepository = userRepository;
+        /** @type {UserService} */
+        this.userService = userService;
 
         this.route('GET', '/api/users/list', this.list);
         this.route('GET', '/api/users/:userId', this.getById, {
@@ -40,19 +39,18 @@ export class UsersController extends ControllerBase {
 
 
     list() {
-        const users = this.userRepository.list();
+        const users = this.userService.list();
         return this.ok(users);
     }
 
     getById(userId) {
-        const user = this.userRepository.get(userId);
+        const user = this.userService.get(userId);
         return this.ok(user);
     }
 
     /** @param {{name: string}} */
     add({ name }) {
-        const user = new User({ name });
-        this.userRepository.add(user);
+        const user = this.userService.add(name);
         return this.ok(user);
     }
 }
