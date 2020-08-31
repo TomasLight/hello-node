@@ -3,7 +3,7 @@ import { Logger } from './logger';
 import { FileLogger } from './file';
 
 function register() {
-    DependencyInjection.register(Logger, FileLogger);
+    DependencyInjection.registerType(FileLogger).as(Logger);
 }
 
 export { register };

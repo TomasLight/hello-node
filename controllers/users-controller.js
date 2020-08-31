@@ -1,7 +1,10 @@
 import { ControllerBase } from './controller-base';
 import { User } from '../data/user';
+import { UserRepository } from '../data/user-repository';
 
 export class UsersController extends ControllerBase {
+    static __constructorParams = ControllerBase.__constructorParams.concat([ UserRepository ]);
+
     constructor(logger, app, userRepository) {
         super(logger, app);
 

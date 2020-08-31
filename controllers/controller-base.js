@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { Application } from '../application';
+import { Logger } from '../utils/loggers';
 
 /**
  * @typedef ActionArgs
@@ -9,10 +10,9 @@ import { Application } from '../application';
  * */
 
 export class ControllerBase {
-    /**
-     * @param {Logger} logger
-     * @param {Application} application
-     */
+    /** @type {InstanceType[]} */
+    static __constructorParams = [ Logger, Application ];
+
     constructor(logger, application) {
         if (new.target === ControllerBase) {
             throw new TypeError('Cannot construct ControllerBase instances directly');

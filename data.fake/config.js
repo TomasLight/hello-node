@@ -3,7 +3,7 @@ import { UserRepository } from '../data/user-repository';
 import { FakeUserRepository } from './fake-user-repository';
 
 function register() {
-    DependencyInjection.register(UserRepository, FakeUserRepository);
+    DependencyInjection.registerType(FakeUserRepository).as(UserRepository);
 }
 
 export { register };

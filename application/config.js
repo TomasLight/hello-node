@@ -4,7 +4,7 @@ import { ExpressApplication } from './express-application';
 
 /** @param {Application} expressApp */
 function register(expressApp) {
-    DependencyInjection.register(Application, ExpressApplication, expressApp);
+    DependencyInjection.registerType(ExpressApplication).as(Application).with(expressApp);
 }
 
 export { register };

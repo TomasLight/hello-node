@@ -1,39 +1,83 @@
+/**
+ * @typedef {function} RegisteredInstanceType
+ * @property {InstanceType[]} __constructorParams
+ * @property {any[]} [__injectionParams]
+ */
+
+/** @type {Map<InstanceType, RegisteredInstanceType>} */
 const dependencies = new Map();
 
+/**
+ * @param {InstanceType & {__constructorParams: InstanceType[]}} instanceType
+ * @param {any[]} [args]
+ */
+function makeInstance(instanceType, args) {
+    const implementation = dependencies.get(instanceType);
+    if (typeof implementation !== 'function') {
+        return implementation;
+    }
+
+    const injectionParams = implementation.__injectionParams || [];
+    return new implementation(...[
+        ...injectionParams,
+        ...args,
+    ]);
+}
+
 const DependencyInjection = {
-    /**
-     * @param {InstanceType} instanceType
-     * @param {InstanceType} implementation
-     * */
-    register: function (instanceType, implementation, ...rest) {
-        if (dependencies.has(instanceType)) {
-            throw new Error(`The instance type (${instanceType}) already registered`);
-        }
+    /** @param {InstanceType} implementationType */
+    registerType: function (implementationType) {
+        return {
+            /** @param {InstanceType} instanceType */
+            as: (instanceType) => {
+                if (dependencies.has(instanceType)) {
+                    throw new Error(`The instance type (${instanceType.name}) is already registered`);
+                }
+                dependencies.set(instanceType, implementationType);
 
-        if (typeof implementation !== 'function') {
-            throw new Error('Passed implementation is not a function');
-        }
-
-        dependencies.set(
-            instanceType,
-            (...args) => new implementation(
-                ...rest,
-                ...args,
-            )
-        );
+                return {
+                    /** @param {any[]} injectionParams */
+                    with: (...injectionParams) => {
+                        implementationType.__injectionParams = injectionParams;
+                    },
+                };
+            },
+        };
     },
 
-    /**
-     * @param {InstanceType} instanceType
-     * */
+    /** @param {any} instance */
+    registerInstance: function (instance) {
+        return {
+            /** @param {InstanceType} instanceType */
+            as: (instanceType) => {
+                if (dependencies.has(instanceType)) {
+                    throw new Error(`The instance type (${instanceType.name}) is already registered`);
+                }
+                dependencies.set(instanceType, instance);
+            },
+        };
+    },
+
+    /** @param {InstanceType & {__constructorParams: InstanceType[]}} instanceType */
     resolve: function (instanceType, ...args) {
         if (dependencies.has(instanceType)) {
-            /** @type {function} */
-            const implementation = dependencies.get(instanceType);
-            return implementation.apply(null, args);
+            return makeInstance(instanceType, args);
         }
 
-        throw new Error(`This class (${instanceType}) is not registered`);
+        if (!instanceType.__constructorParams || !Array.isArray(instanceType.__constructorParams)) {
+            throw new Error(`The ${instanceType.name} cannot be resolved by Dependency Injection`);
+        }
+
+        const dependencyArguments = [];
+        instanceType.__constructorParams.forEach(type => {
+            const instance = DependencyInjection.resolve(type);
+            dependencyArguments.push(instance);
+        });
+
+        return new instanceType(...[
+            ...dependencyArguments,
+            ...args,
+        ]);
     },
 }
 

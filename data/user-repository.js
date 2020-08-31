@@ -7,6 +7,7 @@ export class UserRepository {
 
     /** @returns {User[]} */
     list() {
+        throw new Error("Not implemented");
     }
 
     /**
@@ -14,6 +15,7 @@ export class UserRepository {
      * @returns {User}
      */
     get(userId) {
+        throw new Error("Not implemented");
     }
 
     /**
@@ -21,5 +23,6 @@ export class UserRepository {
      * @returns {User}
      */
     add(user) {
+        throw new Error("Not implemented");
     }
 }
