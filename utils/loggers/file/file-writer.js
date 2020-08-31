@@ -26,7 +26,7 @@ class FileWriter {
 
     write() {
         this.checkFile(error => {
-            if (error) {
+            if (error && fs.existsSync(this.filePath)) {
                 setTimeout(() => {
                     this.write();
                 }, FileWriter.WRITE_ATTEMPT_TIMEOUT);
