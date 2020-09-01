@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import { container } from 'cheap-di';
 
 import { setupEnv, registerDependencies } from './config';
-import { SiteController, UsersController, TestController } from './controllers';
+import { SiteController, UsersController } from './controllers';
 import { Logger } from './utils/loggers';
 import { print } from './utils/application/debug-routes';
 
@@ -26,8 +26,6 @@ app.use(express.static(publicPath));
 
 container.resolve(SiteController);
 container.resolve(UsersController);
-
-new TestController();
 
 app.use((request, response, next) => {
     const logger = container.resolve(Logger);
