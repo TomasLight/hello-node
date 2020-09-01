@@ -1,9 +1,9 @@
-import { DependencyInjection } from '../utils/dependency-injection';
+import { container } from 'cheap-di';
 import { DomainUserService } from './domain-user-service';
 import { UserService } from '../domain/users';
 
 function register() {
-    DependencyInjection.registerType(DomainUserService).as(UserService);
+    container.registerType(DomainUserService).as(UserService);
 }
 
 export { register };

@@ -7,14 +7,25 @@ export class ExpressApplication extends ApplicationBase {
         super();
 
         /** @type {Application} */
-        this.express = express;
+        this._express = express;
+
+        /** @type {IRouter[]} */
+        this._routers = [];
+
+        Object.defineProperty(this, '_router', {
+            get() {
+                if (!this._routers.length) {
+                    return undefined;
+                }
+                return this._routers[this._routers.length - 1];
+            },
+        });
     }
 
     /** @param {string} area */
     area(area) {
-        /** @type {IRouter} */
-        this.router = Router();
-        this.express.use(`/${area}`, this.router);
+        this._routers.push(Router());
+        this._express.use(area, this._router);
     }
 
     /**
@@ -22,10 +33,10 @@ export class ExpressApplication extends ApplicationBase {
      * @param {function} action
      */
     get(url, action) {
-        if (!!this.router) {
-            return this.router.get(url, action);
+        if (this._router) {
+            return this._router.get(url, action);
         }
-        return this.express.get(url, action);
+        return this._express.get(url, action);
     }
 
     /**
@@ -33,10 +44,10 @@ export class ExpressApplication extends ApplicationBase {
      * @param {function} action
      */
     post(url, action) {
-        if (!!this.router) {
-            return this.router.post(url, action);
+        if (this._router) {
+            return this._router.post(url, action);
         }
-        return this.express.post(url, action);
+        return this._express.post(url, action);
     }
 
     /**
@@ -44,10 +55,10 @@ export class ExpressApplication extends ApplicationBase {
      * @param {function} action
      */
     put(url, action) {
-        if (!!this.router) {
-            return this.router.put(url, action);
+        if (this._router) {
+            return this._router.put(url, action);
         }
-        return this.express.put(url, action);
+        return this._express.put(url, action);
     }
 
     /**
@@ -55,10 +66,10 @@ export class ExpressApplication extends ApplicationBase {
      * @param {function} action
      */
     patch(url, action) {
-        if (!!this.router) {
-            return this.router.patch(url, action);
+        if (this._router) {
+            return this._router.patch(url, action);
         }
-        return this.express.patch(url, action);
+        return this._express.patch(url, action);
     }
 
     /**
@@ -66,9 +77,9 @@ export class ExpressApplication extends ApplicationBase {
      * @param {function} action
      */
     delete(url, action) {
-        if (!!this.router) {
-            return this.router.delete(url, action);
+        if (this._router) {
+            return this._router.delete(url, action);
         }
-        return this.express.delete(url, action);
+        return this._express.delete(url, action);
     }
 }

@@ -1,7 +1,7 @@
 import path from 'path';
 
-import { Application } from '../application';
-import { Logger } from '../utils/loggers';
+import { Application } from '../../application';
+import { Logger } from '../../utils/loggers';
 
 /**
  * @typedef ActionArgs

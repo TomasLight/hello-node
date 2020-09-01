@@ -2,34 +2,28 @@ import { Logger } from './logger';
 
 class ConsoleLogger extends Logger {
     log(message, eventKind) {
+        console.log(`\n${new Date().toISOString()}`);
         switch (eventKind) {
             case 'debug':
-                console.log(' +++ DEBUG +++ ');
-                console.log(message);
-                console.log(' --- DEBUG --- ');
+                console.log('DEBUG');
                 break;
 
             case 'info':
-                console.log(' +++ INFO +++ ');
-                console.log(message);
-                console.log(' --- INFO --- ');
+                console.log('INFO');
                 break;
 
             case 'warning':
-                console.log(' +++ WARNING +++ ');
-                console.log(message);
-                console.log(' --- WARNING --- ');
+                console.log('WARNING');
                 break;
 
             case 'error':
-                console.log(' +++ ERROR +++ ');
-                console.log(message);
-                console.log(' --- ERROR --- ');
+                console.log('ERROR');
                 break;
 
             default:
                 throw new Error(`Invalid eventKind: ${eventKind}`);
         }
+        console.log(message);
     }
 
     debug(message) {

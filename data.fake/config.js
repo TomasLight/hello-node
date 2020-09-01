@@ -1,9 +1,9 @@
-import { DependencyInjection } from '../utils/dependency-injection';
+import { container } from 'cheap-di';
 import { UserRepository } from '../data/users';
 import { FakeUserRepository } from './fake-user-repository';
 
 function register() {
-    DependencyInjection.registerType(FakeUserRepository).as(UserRepository);
+    container.registerType(FakeUserRepository).as(UserRepository);
 }
 
 export { register };

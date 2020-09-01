@@ -1,12 +1,14 @@
-const path = require('path');
-const express = require('express');
-const favicon = require('serve-favicon');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+import path from 'path';
+import express from 'express';
+import favicon from 'serve-favicon';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import { container } from 'cheap-di';
 
-const { DependencyInjection } = require('./utils/dependency-injection');
-const { setupEnv, registerDependencies } = require('./config');
-const { SiteController, UsersController } = require('./controllers');
+import { setupEnv, registerDependencies } from './config';
+import { SiteController, UsersController } from './controllers';
+import { Logger } from './utils/loggers';
+import { print } from './utils/application/debug-routes';
 
 const app = express();
 
@@ -22,10 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(publicPath));
 
-DependencyInjection.resolve(SiteController);
-DependencyInjection.resolve(UsersController);
+container.resolve(SiteController);
+container.resolve(UsersController);
 
 app.use((request, response, next) => {
+    const logger = container.resolve(Logger);
+    logger.error(`${request.method} ${request.url} NOT FOUND`);
+
     const filePath = __dirname + '/public/not-found.html';
     response.status(404).sendFile(filePath);
 });
