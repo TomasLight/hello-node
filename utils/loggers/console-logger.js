@@ -9,15 +9,15 @@ class ConsoleLogger extends Logger {
                 break;
 
             case 'info':
-                console.log('INFO');
+                console.log('\x1b[34m%s\x1b[0m','INFO');
                 break;
 
             case 'warning':
-                console.log('WARNING');
+                console.log('\x1b[33m%s\x1b[0m','WARNING');
                 break;
 
             case 'error':
-                console.log('ERROR');
+                console.log('\x1b[31m%s\x1b[0m', 'ERROR');
                 break;
 
             default:

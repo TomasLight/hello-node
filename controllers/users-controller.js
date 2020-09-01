@@ -1,5 +1,15 @@
-import { ControllerBase } from './controller-base';
+import { ControllerBase } from './base/controller-base';
 import { UserService } from '../domain/users';
+
+function testDecorator(message) {
+    return function (target, property, descriptor) {
+        console.log(message);
+        console.log(target);
+        console.log(property);
+        console.log(descriptor);
+        return descriptor;
+    }
+}
 
 export class UsersController extends ControllerBase {
     static __constructorParams = ControllerBase.__constructorParams.concat([ UserService ]);
@@ -10,30 +20,31 @@ export class UsersController extends ControllerBase {
         /** @type {UserService} */
         this.userService = userService;
 
-        this.route('GET', '/api/users/list', this.list);
-        this.route('GET', '/api/users/:userId', this.getById, {
-            params: [ 'userId' ],
-        });
-        this.route('POST', '/api/users/add', this.add, {
-            body: true,
-        });
+        this.api('users', api => api
+            .get('/list', this.list)
+            .get('/:userId', this.getById, {
+                params: [ 'userId' ],
+            })
+            .post('/add', this.getById, {
+                body: true,
+            })
+        );
 
-        this.area('users');
-
-        this.route('GET', '/', this.userListPage);
-        this.route('GET', '/:userId', this.userPage, {
-            params: [ 'userId' ],
-        });
+        this.pages('users', page => page
+            .get('/', this.userListPage)
+            .get('/:userId', this.userPage, {
+                params: [ 'userId' ],
+            })
+        );
     }
 
+    // @testDecorator('my decorator')
     userListPage() {
-        this.logger.debug('User controller returns user list page');
         return this.view('list');
     }
 
     /** @param {number} userId */
     userPage(userId) {
-        this.logger.debug('User controller returns user page');
         return this.view('user');
     }
 
@@ -43,6 +54,7 @@ export class UsersController extends ControllerBase {
         return this.ok(users);
     }
 
+    /** @param {number} userId */
     getById(userId) {
         const user = this.userService.get(userId);
         return this.ok(user);

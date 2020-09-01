@@ -38,3 +38,5 @@ app.use((request, response, next) => {
 app.listen(process.env.PORT, process.env.HOST, () => {
     console.log(`Сервер начал прослушивание запросов на порту ${process.env.PORT}`);
 });
+
+app._router.stack.forEach(print.bind(null, []));

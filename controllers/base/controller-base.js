@@ -1,13 +1,14 @@
 import path from 'path';
 
-import { Application } from '../../application';
 import { Logger } from '../../utils/loggers';
+import { Application } from '../../application';
+import { RouteRequest } from './route-request';
 
 /**
- * @typedef ActionArgs
- * @property {string[]} [params]
- * @property {boolean} [body]
- * */
+ * @callback RouteCallback
+ * @param {RouteRequest} route
+ * @returns {void}
+ */
 
 export class ControllerBase {
     /** @type {InstanceType[]} */
@@ -22,7 +23,10 @@ export class ControllerBase {
         this.logger = logger;
 
         /** @type {Application} */
-        this.application = application;
+        this._application = application;
+
+        /** @type {RouteRequest} */
+        this._route = new RouteRequest(logger, application, this);
 
         Object.defineProperty(this, 'publicPath', {
             get() {
@@ -33,78 +37,32 @@ export class ControllerBase {
     }
 
     /**
-     * @param {'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'} method
-     * @param {string} url
-     * @param {function} action
-     * @param {ActionArgs?} args
-     */
-    route(method, url, action, args) {
-        const boundedAction = this.bind(action, args);
-        switch (method) {
-            case 'GET':
-                this.application.get(url, boundedAction);
-                break;
-
-            case 'POST':
-                this.application.post(url, boundedAction);
-                break;
-
-            case 'PUT':
-                this.application.put(url, boundedAction);
-                break;
-
-            case 'PATCH':
-                this.application.patch(url, boundedAction);
-                break;
-
-            case 'DELETE':
-                this.application.delete(url, boundedAction);
-                break;
-
-            default:
-                throw new Error(`Invalid passed method (${method})`);
-        }
-    }
-
-    /**
-     * Bind controller action call with controller context
-     * @param {function} action
-     * @param {ActionArgs} [actionArgs]
-     */
-    bind(action, actionArgs = {}) {
-        return function (request, response) {
-            /** @type {IncomingMessage} */
-            this.request = request;
-
-            /** @type {ServerResponse} */
-            this.response = response;
-
-            if (!actionArgs) {
-                action.call(this);
-            }
-
-            let args = [];
-
-            if (Array.isArray(actionArgs.params)) {
-                args = actionArgs.params.map(paramName => this.request.params[paramName]);
-            }
-            if (actionArgs.body) {
-                args.push(this.request.body);
-            }
-
-            action.apply(this, args);
-        }.bind(this);
+     * @param {string} area
+     * @param {RouteCallback} callback
+     * */
+    api(area, callback) {
+        this._application.area(`/api/${area}`);
+        callback(this._route);
     }
 
     /**
      * @param {string} area
-     */
-    area(area) {
-        this.application.area(area);
-
-        this.getViewPath = function (viewName) {
-            return path.join(this.publicPath, area, `${viewName}.html`);
-        };
+     * @param {RouteCallback} callback
+     * */
+    pages(area, callback) {
+        if (area) {
+            this._application.area(`/${area}`);
+            this.getViewPath = function (viewName) {
+                return path.join(this.publicPath, area, `${viewName}.html`);
+            };
+        }
+        else {
+            this._application.area(`/`);
+            this.getViewPath = function (viewName) {
+                return path.join(this.publicPath, `${viewName}.html`);
+            };
+        }
+        callback(this._route);
     }
 
     /**

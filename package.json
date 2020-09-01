@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "1.19.0",
-    "cheap-di": "0.1.4",
+    "cheap-di": "0.1.5",
     "cookie-parser": "1.4.5",
     "express": "4.17.1",
     "serve-favicon": "2.5.0"
@@ -20,6 +20,7 @@
     "@babel/core": "^7.11.4",
     "@babel/node": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "7.10.4",
+    "@babel/plugin-proposal-decorators": "^7.10.5",
     "@babel/preset-env": "^7.11.0",
     "@types/express": "4.17.7",
     "nodemon": "2.0.4",
