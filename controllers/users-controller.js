@@ -1,16 +1,6 @@
 import { ControllerBase } from './base/controller-base';
 import { UserService } from '../domain/users';
 
-function testDecorator(message) {
-    return function (target, property, descriptor) {
-        console.log(message);
-        console.log(target);
-        console.log(property);
-        console.log(descriptor);
-        return descriptor;
-    }
-}
-
 export class UsersController extends ControllerBase {
     static __constructorParams = ControllerBase.__constructorParams.concat([ UserService ]);
 
@@ -38,7 +28,6 @@ export class UsersController extends ControllerBase {
         );
     }
 
-    // @testDecorator('my decorator')
     userListPage() {
         return this.view('list');
     }
