@@ -1,14 +1,14 @@
 import path from 'path';
-import express from 'express';
+import express, { Router } from 'express';
 import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { container } from 'cheap-di';
 
 import { setupEnv, registerDependencies } from './config';
-import { SiteController, UsersController } from './controllers';
 import { print } from './utils/application/debug-routes';
 import { handleNotFoundMiddleware } from './not-found-middleware';
+import { MvcMiddleware } from './mvc/mvc-middleware';
 
 const app = express();
 
@@ -25,8 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(publicPath));
 
-container.resolve(SiteController);
-container.resolve(UsersController);
+MvcMiddleware.connect(app, Router, container);
 
 app.use(handleNotFoundMiddleware);
 

@@ -1,7 +1,9 @@
-import path from "path";
-import fs from "fs";
+import path from 'path';
+import fs from 'fs';
 
 import { Logger } from '../utils/loggers';
+
+const HTTP_METHODS = [ 'get', 'post', 'put', 'patch', 'delete' ];
 
 class MvcMiddleware {
     /**
@@ -10,7 +12,8 @@ class MvcMiddleware {
      * @param {import('cheap-di).container} [container]
      */
     static connect(applicationInstance, createRouter, container) {
-        const directoryPath = path.join(__dirname, 'controllers');
+        const appDir = path.dirname(require.main.filename);
+        const directoryPath = path.join(appDir, 'controllers');
         new MvcMiddleware(applicationInstance, createRouter, container)
             .registerControllers(directoryPath)
             .run();
@@ -27,17 +30,6 @@ class MvcMiddleware {
         this.container = container || {
             resolve: (controllerClass, ...args) => new controllerClass(...args),
         };
-
-        // if (container) {
-        //     /** @type {import('cheap-di).container} */
-        //     this.container = container;
-        // }
-        // else {
-        //     /** @type {import('cheap-di).container} */
-        //     this.container = {
-        //         resolve: (controllerClass, ...args) => new controllerClass(...args),
-        //     };
-        // }
     }
 
     registerControllers(directoryPath) {
@@ -53,13 +45,12 @@ class MvcMiddleware {
             const ControllerClass = require(pathToController).default;
             if (!ControllerClass) {
                 const logger = this.container.resolve(Logger);
-                logger.debug(`controller (${name}) not found`);
+                logger.info(`${name} has no default import to register it as controller`);
                 return;
             }
 
             const properties = Object.keys(ControllerClass);
-            const httpMethods = ['get', 'post', 'put', 'patch', 'delete'];
-            const hasAnyHttpMethodProperty = properties.some(property => httpMethods.indexOf(property) >= 0);
+            const hasAnyHttpMethodProperty = properties.some(property => HTTP_METHODS.indexOf(property) >= 0);
 
             if (!hasAnyHttpMethodProperty) {
                 const logger = this.container.resolve(Logger);
@@ -76,32 +67,48 @@ class MvcMiddleware {
     register(ControllerClass) {
         const router = this.createRouter();
 
-        Object.keys(ControllerClass.get).forEach(route => {
-            let _middleware;
+        HTTP_METHODS.forEach(httpMethod => {
+            const routes = ControllerClass[httpMethod];
+            if (!routes) {
+                return;
+            }
 
-            /** @type {string | any[]} */
-            const settings = ControllerClass.get[route];
-            if (typeof settings === 'string') {
-                _middleware = this.setupMiddleware(ControllerClass, settings);
-            }
-            else {
-                const actionName = settings[0];
-                const routeConfig = settings[1];
-                _middleware = this.setupMiddleware(
-                    ControllerClass,
-                    actionName,
-                    routeConfig.params,
-                    routeConfig.body
-                );
-            }
-            router.get(`/${route}`, _middleware);
+            Object.keys(routes).forEach(route => {
+                let middleware;
+
+                /** @type {string | any[]} */
+                const settings = routes[route];
+                if (typeof settings === 'string') {
+                    middleware = this.createMiddleware(ControllerClass, settings);
+                }
+                else {
+                    const actionName = settings[0];
+                    const routeConfig = settings[1];
+                    middleware = this.createMiddleware(
+                        ControllerClass,
+                        actionName,
+                        routeConfig.params,
+                        routeConfig.body
+                    );
+                }
+
+                if (ControllerClass.area && route.startsWith('/')) {
+                    this.applicationInstance[httpMethod](route, middleware);
+                }
+                else if (route.startsWith('/')) {
+                    router[httpMethod](route, middleware);
+                }
+                else {
+                    router[httpMethod](`/${route}`, middleware);
+                }
+            });
         });
 
         if (ControllerClass.area) {
-            this.applicationInstance.use(`/${ControllerClass.area}`, router);
+            this.applicationInstance.use(ControllerClass.area, router);
         }
-        else {
-            this.applicationInstance.use('/', router);
+        else if (router.stack.length) {
+            this.applicationInstance.use(router);
         }
     }
 
@@ -111,8 +118,9 @@ class MvcMiddleware {
      * @param {string[]} [params]
      * @param {boolean} [body]
      * */
-    setupMiddleware(ControllerClass, actionName, params, body) {
+    createMiddleware(ControllerClass, actionName, params, body) {
         const container = this.container;
+
         /**
          * @param {Request<ParamsDictionary, any, any, ParsedQs>} request
          * @param {Response<any>} response
@@ -131,11 +139,12 @@ class MvcMiddleware {
 
             controller[actionName].apply(controller, args);
         }
+
         return middleware;
     }
 
-    run () {
-        return function(request, response, next) {
+    run() {
+        return function (request, response, next) {
             next();
         };
     }

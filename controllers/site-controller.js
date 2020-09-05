@@ -1,20 +1,16 @@
 import { ControllerBase } from './base/controller-base';
 
 export class SiteController extends ControllerBase {
-    constructor(logger, app) {
-        super(logger, app);
-
-        this.pages(undefined, page => page
-            .get('/', this.indexPage)
-            .get('/index', this.indexPage)
-            .get('/about', this.aboutPage)
-            .get('/home', this.homePage)
-            .get('/form', this.formPage)
-            .get('/test/:testId', this.test, {
-                params: [ 'testId' ],
-            })
-            .post('/form', this.form)
-        );
+    static get = {
+        '/': 'indexPage',
+        index: 'indexPage',
+        about: 'aboutPage',
+        home: 'homePage',
+        form: 'formPage',
+        'test/:testId': ['test', { params: [ 'testId' ] }],
+    }
+    static post = {
+        form: 'form',
     }
 
     indexPage() {
@@ -56,3 +52,5 @@ export class SiteController extends ControllerBase {
         return this.ok(result);
     }
 }
+
+export default SiteController;

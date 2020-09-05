@@ -1,20 +1,17 @@
 import path from 'path';
 
-import { Logger } from '../../../utils/loggers';
-
-export class ControllerBase {
-    /** @type {InstanceType[]} */
-    static __constructorParams = [ Logger ];
-
-    constructor(logger, request, response) {
-        if (new.target === ControllerBase) {
-            throw new TypeError('Cannot construct ControllerBase instances directly');
+export class MvcController {
+    constructor(request, response) {
+        if (new.target === MvcController) {
+            throw new TypeError('Cannot construct MvcController instances directly');
         }
 
         this.__type__ = new.target;
-
-        /** @type {Logger} */
-        this.logger = logger;
+        Object.defineProperty(this, '__type__', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+        });
 
         /** @type {IncomingMessage & {params?: object, body?: object}} */
         this.request = request;
@@ -25,12 +22,12 @@ export class ControllerBase {
 
     /**
      * @param {string} viewName
+     * @param {string} [area]
      */
-    getViewPath(viewName) {
+    getViewPath(viewName, area) {
         const appDir = path.dirname(require.main.filename);
         const publicPath = path.join(appDir, 'public');
 
-        const area = this.__type__.area;
         if (area) {
             return path.join(publicPath, 'views', area, `${viewName}.html`);
         }
@@ -41,7 +38,7 @@ export class ControllerBase {
      * @param {string} viewName
      */
     view(viewName) {
-        const pathToView = this.getViewPath(viewName);
+        const pathToView = this.getViewPath(viewName, this.__type__.area);
         this.response.sendFile(pathToView);
     }
 

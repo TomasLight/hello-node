@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "nodemon --exec babel-node index.js",
     "prod": "babel index.js --out-file index-compilied.js",
-
-    "test": "nodemon --exec babel-node test-new-routes/index.js",
-    "client": "nodemon --exec babel-node index-client.js"
+    "client": "nodemon --exec babel-node index-client.js",
+    "test": "jest"
   },
   "author": "tomas.light",
   "license": "MIT",
@@ -25,6 +24,8 @@
     "@babel/plugin-proposal-class-properties": "7.10.4",
     "@babel/preset-env": "^7.11.0",
     "@types/express": "4.17.7",
+    "@types/jest": "26.0.13",
+    "jest": "26.4.2",
     "nodemon": "2.0.4",
     "tslib": "2.0.1"
   }
