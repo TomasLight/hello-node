@@ -1,21 +1,23 @@
 import path from 'path';
-import express from 'express';
+import express, { Router } from 'express';
 import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { container } from 'cheap-di';
 
-import { setupEnv, registerDependencies } from './config';
-import { SiteController, UsersController } from './controllers';
-import { print } from './utils/application/debug-routes';
-import { handleNotFoundMiddleware } from './not-found-middleware';
+import { setupEnv } from '../config';
+import { Logger } from '../utils/loggers';
+import { handleNotFoundMiddleware } from '../not-found-middleware';
+import { ConsoleLogger } from '../utils/loggers/console-logger';
+import { print } from '../utils/application/debug-routes';
+import { MvcMiddleware } from './mvc-middleware';
 
 const app = express();
 
 setupEnv();
-registerDependencies(app);
+container.registerType(ConsoleLogger).as(Logger);
 
-const rootPath = path.join(__dirname);
+const rootPath = path.join(__dirname, '..');
 const publicPath = path.join(rootPath, 'public');
 const faviconPath = path.join(publicPath, 'img', 'favicon.ico');
 
@@ -25,8 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(publicPath));
 
-container.resolve(SiteController);
-container.resolve(UsersController);
+MvcMiddleware.connect(app, Router, container);
 
 app.use(handleNotFoundMiddleware);
 

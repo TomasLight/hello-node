@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec babel-node index.js",
-    "prod": "babel index.js --out-file index-compilied.js"
+    "prod": "babel index.js --out-file index-compilied.js",
+
+    "test": "nodemon --exec babel-node test-new-routes/index.js",
+    "client": "nodemon --exec babel-node index-client.js"
   },
   "author": "tomas.light",
   "license": "MIT",
